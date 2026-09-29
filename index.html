@@ -1,0 +1,243 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Tip Calculator</title>
+    <style>
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        font-family: Arial, sans-serif;
+        background: #f4f7fb;
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 20px;
+      }
+
+      .calculator {
+        width: 100%;
+        max-width: 420px;
+        background: white;
+        padding: 30px;
+        border-radius: 16px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      }
+
+      h1 {
+        text-align: center;
+        color: #222;
+        margin-bottom: 25px;
+      }
+
+      .form-group {
+        margin-bottom: 20px;
+      }
+
+      label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 600;
+        color: #333;
+      }
+
+      input,
+      select {
+        width: 100%;
+        padding: 12px;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        font-size: 16px;
+        outline: none;
+      }
+
+      input:focus,
+      select:focus {
+        border-color: #4f46e5;
+      }
+
+      button {
+        width: 100%;
+        padding: 13px;
+        border: none;
+        border-radius: 8px;
+        background: #4f46e5;
+        color: white;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+      }
+
+      button:hover {
+        background: #4338ca;
+      }
+
+      .error {
+        color: #dc2626;
+        font-size: 14px;
+        margin-top: 6px;
+        display: none;
+      }
+
+      .results {
+        margin-top: 25px;
+        padding-top: 20px;
+        border-top: 1px solid #ddd;
+        display: none;
+      }
+
+      .result {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 12px 0;
+      }
+
+      .result span:first-child {
+        color: #555;
+      }
+
+      .result span:last-child {
+        font-weight: 700;
+        color: #222;
+        font-size: 18px;
+      }
+
+      .result.total {
+        border-top: 1px solid #eee;
+        margin-top: 5px;
+        padding-top: 17px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="calculator">
+      <h1>Tip Calculator</h1>
+
+      <div class="form-group">
+        <label for="billAmount">Bill Amount</label>
+        <input
+          type="number"
+          id="billAmount"
+          placeholder="Enter bill amount"
+          min="0"
+          step="0.01"
+        />
+        <p class="error" id="billError">
+          Please enter a valid bill amount greater than 0.
+        </p>
+      </div>
+
+      <div class="form-group">
+        <label for="tipPercentage">Tip Percentage</label>
+        <select id="tipPercentage">
+          <option value="5">5%</option>
+          <option value="10">10%</option>
+          <option value="15">15%</option>
+          <option value="20">20%</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="numberOfPeople">Number of People</label>
+        <input
+          type="number"
+          id="numberOfPeople"
+          placeholder="Enter number of people"
+          min="1"
+          step="1"
+        />
+        <p class="error" id="peopleError">
+          Please enter a valid number of people greater than 0.
+        </p>
+      </div>
+
+      <button id="calculateBtn">Calculate Tip</button>
+
+      <div class="results" id="results">
+        <div class="result">
+          <span>Tip Amount</span>
+          <span id="tipAmount">₹0.00</span>
+        </div>
+
+        <div class="result total">
+          <span>Total Bill</span>
+          <span id="totalBill">₹0.00</span>
+        </div>
+
+        <div class="result">
+          <span>Amount Per Person</span>
+          <span id="amountPerPerson">₹0.00</span>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const billAmount = document.getElementById("billAmount");
+      const tipPercentage = document.getElementById("tipPercentage");
+      const numberOfPeople = document.getElementById("numberOfPeople");
+
+      const calculateBtn = document.getElementById("calculateBtn");
+
+      const billError = document.getElementById("billError");
+      const peopleError = document.getElementById("peopleError");
+
+      const results = document.getElementById("results");
+
+      const tipAmount = document.getElementById("tipAmount");
+      const totalBill = document.getElementById("totalBill");
+      const amountPerPerson = document.getElementById("amountPerPerson");
+
+      calculateBtn.addEventListener("click", function () {
+        const bill = Number(billAmount.value);
+        const tip = Number(tipPercentage.value);
+        const people = Number(numberOfPeople.value);
+
+        let isValid = true;
+
+        // Validate bill amount
+        if (!billAmount.value || bill <= 0) {
+          billError.style.display = "block";
+          isValid = false;
+        } else {
+          billError.style.display = "none";
+        }
+
+        // Validate number of people
+        if (!numberOfPeople.value || people <= 0) {
+          peopleError.style.display = "block";
+          isValid = false;
+        } else {
+          peopleError.style.display = "none";
+        }
+
+        if (!isValid) {
+          results.style.display = "none";
+          return;
+        }
+
+        // Formula:
+        // Tip Amount = Bill Amount × Tip Percentage / 100
+        const calculatedTip = (bill * tip) / 100;
+
+        // Total Bill = Bill Amount + Tip Amount
+        const calculatedTotal = bill + calculatedTip;
+
+        // Amount Per Person = Total Bill / Number of People
+        const calculatedPerPerson = calculatedTotal / people;
+
+        tipAmount.textContent = `₹${calculatedTip.toFixed(2)}`;
+        totalBill.textContent = `₹${calculatedTotal.toFixed(2)}`;
+        amountPerPerson.textContent = `₹${calculatedPerPerson.toFixed(2)}`;
+
+        results.style.display = "block";
+      });
+    </script>
+  </body>
+</html>
